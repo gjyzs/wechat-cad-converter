@@ -1,0 +1,12 @@
+{
+  "description": "Free local 3D mesh converter prototype; CAD formats pending",
+  "appid": "touristappid",
+  "projectname": "cad-converter-free",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "miniprogram-native/",
+  "setting": {
+    "es6": true,
+    "minified": true,
+    "urlCheck": true
+  }
+}

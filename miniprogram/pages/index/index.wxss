@@ -1,0 +1,5 @@
+.setup { margin: 72rpx 32rpx; padding: 44rpx 36rpx; background: #fff; border-radius: 24rpx; box-shadow: 0 12rpx 38rpx rgba(23, 46, 80, .06); }
+.eyebrow { color: #3865d8; font-size: 26rpx; font-weight: 600; }
+.title { margin-top: 24rpx; font-size: 42rpx; line-height: 1.35; font-weight: 700; }
+.description { margin-top: 26rpx; color: #51647d; font-size: 28rpx; line-height: 1.8; }
+.note { margin-top: 36rpx; padding: 24rpx; background: #edf3ff; border-radius: 16rpx; color: #36558e; font-size: 25rpx; line-height: 1.6; }

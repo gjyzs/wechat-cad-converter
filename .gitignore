@@ -1,0 +1,8 @@
+node_modules/
+project.private.config.json
+dist/
+source/*-bundle.js
+miniprogram-native/lib/mesh.js
+miniprogram-native/lib/cad.js
+miniprogram-native/packages/
+experiments/native-cad-split/packages/

@@ -1,0 +1,20 @@
+{
+  "pages": ["pages/index/index"],
+  "subpackages": [
+    { "name": "cad-core", "root": "packages/cad-core", "pages": ["placeholder/index"] },
+    { "name": "cad-1", "root": "packages/cad-1", "pages": ["placeholder/index"] },
+    { "name": "cad-2", "root": "packages/cad-2", "pages": ["placeholder/index"] },
+    { "name": "cad-3", "root": "packages/cad-3", "pages": ["placeholder/index"] },
+    { "name": "cad-4", "root": "packages/cad-4", "pages": ["placeholder/index"] },
+    { "name": "cad-5", "root": "packages/cad-5", "pages": ["placeholder/index"] },
+    { "name": "cad-6", "root": "packages/cad-6", "pages": ["placeholder/index"] },
+    { "name": "cad-7", "root": "packages/cad-7", "pages": ["placeholder/index"] }
+  ],
+  "window": {
+    "navigationBarTitleText": "三维格式转换",
+    "navigationBarBackgroundColor": "#f5f8fd",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f8fd"
+  },
+  "style": "v2"
+}

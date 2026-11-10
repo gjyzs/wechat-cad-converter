@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>三维格式工坊 · 本地批量转换</title>
+<style>
+:root{font-family:Inter,"Segoe UI","Microsoft YaHei",system-ui,-apple-system,sans-serif;color:#17213b;background:#f6f8fc;font-synthesis:none;--ink:#17213b;--muted:#71809a;--blue:#3768ed;--line:#e6ebf3}
+*{box-sizing:border-box}
+body{margin:0;min-width:320px;background:radial-gradient(ellipse at 50% -28%,#e9f0ff 0,transparent 55%),#f6f8fc}
+button,select{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #a1baff;outline-offset:3px}
+.topbar{height:76px;border-bottom:1px solid #e8edf5;background:rgba(255,255,255,.82)}
+.topbar-inner{max-width:1216px;padding:0 28px;margin:auto;height:100%;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:11px;color:#1a2741;font-size:15px;font-weight:760;letter-spacing:.04em}
+.brand-mark{width:35px;height:35px;border-radius:10px;background:#3869ee;display:grid;place-items:center;box-shadow:0 5px 12px rgba(55,104,237,.2)}
+.brand-mark svg{width:22px;height:22px}
+.brand-sub{font-size:10px;color:#9aa7ba;letter-spacing:.12em;font-weight:700;margin-top:2px}
+.local-badge{display:flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #e4eaf2;border-radius:99px;background:#fff;color:#63728c;font-size:12px;font-weight:600}
+.local-dot{width:7px;height:7px;border-radius:50%;background:#41bc93;box-shadow:0 0 0 3px #e2f6ef}
+.shell{max-width:1216px;margin:auto;padding:51px 28px 36px}
+.hero{display:flex;align-items:end;justify-content:space-between;margin:0 0 25px}
+.eyebrow{color:#5d7fd4;font-size:11px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin:0 0 10px}
+h1{font-size:32px;line-height:1.28;letter-spacing:-.045em;margin:0;color:#17213b;font-weight:780}
+h1 span{color:#3869ed}
+.hero-copy{margin:10px 0 0;color:#7a88a1;font-size:14px;line-height:1.7}
+.hero-note{font-size:12px;color:#8e9bb0;display:flex;gap:7px;align-items:center;padding-bottom:4px}
+.hero-note svg{width:16px;height:16px;stroke:#8fa1bb}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 344px;min-height:497px;border:1px solid #e4eaf3;border-radius:18px;overflow:hidden;background:white;box-shadow:0 16px 50px rgba(33,58,108,.055),0 2px 8px rgba(33,58,108,.025)}
+.main-column{padding:28px}
+.side-column{border-left:1px solid #eaf0f6;background:#fbfcff;padding:28px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:19px}
+.section-label{display:flex;align-items:center;gap:10px;color:#202d46;font-weight:740;font-size:15px}
+.number{width:25px;height:25px;display:grid;place-items:center;color:#4672e9;background:#edf2ff;border-radius:8px;font-size:11px;font-weight:800}
+.section-hint{font-size:12px;color:#9aa7ba}
+.dropzone{display:flex;width:100%;min-height:220px;border:1.5px dashed #c7d6f3;border-radius:13px;background:linear-gradient(180deg,#f8faff,#f4f7ff);align-items:center;justify-content:center;flex-direction:column;color:#263552;padding:22px;transition:.18s border-color,.18s background,.18s transform}
+.dropzone:hover,.dropzone.dragging{border-color:#638af4;background:#edf3ff}
+.dropzone:active{transform:scale(.998)}
+.drop-icon{width:64px;height:64px;border-radius:19px;background:white;box-shadow:0 6px 16px rgba(57,96,183,.1);display:grid;place-items:center;color:#567eea;margin-bottom:14px}
+.drop-icon svg{width:37px;height:37px}
+.drop-title{font-size:15px;font-weight:750;letter-spacing:.01em}
+.drop-title em{font-style:normal;color:#3f6fea}
+.drop-sub{font-size:12px;color:#94a1b6;margin-top:9px;line-height:1.65}
+.drop-choose{margin-top:15px;color:#fff;background:#4672ec;border-radius:8px;padding:8px 15px;font-size:12px;font-weight:700;box-shadow:0 4px 10px #466feb2c}
+.queue-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:25px;padding-bottom:13px;border-bottom:1px solid #eef1f6}
+.queue-title{font-size:13px;font-weight:720;color:#2a3650}
+.queue-count{display:inline-block;font-size:11px;color:#8f9cb2;font-weight:500;margin-left:6px}
+.queue-actions{display:flex;gap:14px}
+.link-button{border:0;background:transparent;padding:3px 0;color:#5575bf;font-size:12px}
+.link-button:disabled{color:#c4ccda}
+.list-empty{padding:22px 0 6px;display:flex;gap:9px;align-items:center;color:#a6b1c1;font-size:12px}
+.list-empty[hidden]{display:none}
+.list-empty svg{width:17px;height:17px;stroke:#b9c4d5}
+.file-list{list-style:none;padding:0;margin:0;max-height:285px;overflow:auto}
+.file-row{display:flex;align-items:center;gap:11px;padding:12px 2px;border-bottom:1px solid #f0f3f8}
+.file-badge{flex:none;width:38px;height:38px;border-radius:9px;background:#f0f4ff;color:#5c7bd2;display:grid;place-items:center;font-size:10px;font-weight:800}
+.file-info{min-width:0;flex:1}
+.file-name{font-size:12px;font-weight:650;color:#35435c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-meta{font-size:11px;color:#a3afc0;margin-top:4px}
+.file-status{text-align:right;font-size:11px;color:#96a2b4;min-width:66px}
+.file-status.processing{color:#5478d9}
+.file-status.done{color:#39a17d}
+.file-status.failed{color:#d46666}
+.status-detail{display:block;max-width:190px;white-space:normal;color:#9ba7b7;margin-top:4px;line-height:1.4;overflow-wrap:anywhere}
+.remove-file{border:0;background:transparent;color:#b1bdcc;font-size:20px;line-height:1;padding:4px}
+.remove-file:hover{color:#d36666}
+.side-title{margin-bottom:22px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:12px;color:#516078;font-weight:700;margin-bottom:8px}
+.select-wrap{position:relative}
+.select-wrap:after{content:"";position:absolute;right:16px;top:17px;width:7px;height:7px;border-right:1.7px solid #7687a2;border-bottom:1.7px solid #7687a2;transform:rotate(45deg);pointer-events:none}
+select{width:100%;height:46px;border:1px solid #dfe6f1;border-radius:9px;background:#fff;color:#263552;padding:0 36px 0 13px;appearance:none;font-size:13px;font-weight:650}
+select:disabled{opacity:.65}
+.field-help{font-size:11px;color:#98a5b8;margin:9px 0 0;line-height:1.65}
+.advanced{border-top:1px solid #edf1f7;border-bottom:1px solid #edf1f7;padding:14px 0;margin:22px 0 19px}
+.advanced summary,.license summary{list-style:none;cursor:pointer;font-size:12px;font-weight:680;color:#62718b;display:flex;align-items:center;justify-content:space-between}
+.advanced summary::-webkit-details-marker,.license summary::-webkit-details-marker{display:none}
+.advanced summary:after,.license summary:after{content:"+";font-size:17px;color:#9faec3;font-weight:400}
+.advanced[open] summary:after,.license[open] summary:after{content:"−"}
+.advanced .field{margin:16px 0 0}
+.advanced .field-help{margin-bottom:2px}
+.action-button{height:47px;width:100%;border-radius:9px;font-size:13px;font-weight:740;display:flex;align-items:center;justify-content:center;gap:8px}
+.action-button svg{width:16px;height:16px}
+.primary{color:#fff;background:#3e6eeb;border:1px solid #3e6eeb;box-shadow:0 6px 14px rgba(57,104,230,.2)}
+.primary:hover:not(:disabled){background:#315fdc}
+.primary:disabled{background:#b4c4eb;border-color:#b4c4eb;box-shadow:none}
+.secondary{margin-top:10px;color:#4569c1;background:#fff;border:1px solid #dbe5f7}
+.secondary:hover:not(:disabled){background:#f4f7ff}
+.secondary:disabled{color:#bac6d9;background:#f9fbff}
+.progress-top{display:flex;justify-content:space-between;gap:8px;color:#a3afc0;font-size:11px;margin:18px 0 8px}
+progress{display:block;width:100%;height:5px;border:0;background:#e9eff8;border-radius:9px;overflow:hidden}
+progress::-webkit-progress-bar{background:#e9eff8}
+progress::-webkit-progress-value{background:#6488ed;border-radius:9px}
+progress::-moz-progress-bar{background:#6488ed}
+.feedback{min-height:34px;margin:11px 0 0;color:#8795ac;font-size:11px;line-height:1.6}
+.feedback.is-error{color:#d16a6a}
+.local-note{display:flex;align-items:flex-start;gap:9px;margin-top:13px;color:#91a0b5;font-size:11px;line-height:1.65}
+.local-note svg{flex:none;width:15px;height:15px;margin-top:1px;stroke:#91a4bd}
+.foot-notes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:17px}
+.note{display:flex;align-items:flex-start;gap:11px;padding:16px 18px;border:1px solid #e9eef5;border-radius:12px;background:rgba(255,255,255,.72)}
+.note-icon{flex:none;color:#7190d9;background:#edf3ff;border-radius:8px;width:28px;height:28px;display:grid;place-items:center}
+.note-icon svg{width:15px;height:15px}
+.note strong{display:block;font-size:12px;color:#596981;margin-bottom:4px}
+.note p{font-size:11px;line-height:1.7;color:#94a1b3;margin:0}
+.footer{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin:25px 2px 0;color:#a5b0c0;font-size:11px}
+.license{width:min(470px,100%);margin-left:auto}
+.license summary{font-size:11px;color:#a2aec0;justify-content:flex-end;gap:8px}
+.license summary:after{font-size:14px}
+.license-content{padding:10px 0;line-height:1.7;color:#8f9daf}
+.license-content a{color:#617fca}
+.license-content pre{white-space:pre-wrap;max-height:160px;overflow:auto;font-size:10px;background:#fff;padding:10px;border:1px solid #e7edf5;border-radius:8px}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.side-column{border-left:0;border-top:1px solid #eaf0f6}.hero-note{display:none}.side-column{padding:24px 28px}.foot-notes{grid-template-columns:1fr;gap:9px}}
+@media(max-width:520px){.topbar{height:64px}.topbar-inner,.shell{padding-left:17px;padding-right:17px}.local-badge{font-size:11px;padding:7px 9px}.shell{padding-top:34px}.hero{margin-bottom:20px}h1{font-size:26px}.hero-copy{font-size:13px}.workspace{border-radius:14px}.main-column,.side-column{padding:21px 18px}.dropzone{min-height:194px}.file-status{min-width:55px}.status-detail{max-width:110px}.footer{display:block}.license{margin:10px 0 0}.license summary{justify-content:flex-start}}
+/* Interface refinement: a clearer sequence and visible output choices. */
+:root{--blue:#345fe7;--ink:#17233c;--muted:#738198}
+body{background:radial-gradient(ellipse at 75% -18%,#e7efff 0,transparent 44%),#f5f7fb}
+.topbar{height:72px}
+.topbar-inner,.shell{max-width:1240px}
+.brand-mark{border-radius:11px;background:linear-gradient(145deg,#527cf5,#315bd8)}
+.shell{padding-top:42px}
+.hero{margin-bottom:24px}
+.eyebrow{color:#587be0;letter-spacing:.13em}
+h1{font-size:34px;font-weight:780;letter-spacing:-.04em}
+.hero-copy{color:#6e7d94;font-size:14px}
+.workflow{display:flex;align-items:center;gap:0;margin:0 0 17px;color:#8e9aab;font-size:12px}
+.flow-step{display:flex;align-items:center;gap:7px;white-space:nowrap}
+.flow-index{width:23px;height:23px;border:1px solid #dfe6f1;border-radius:50%;display:grid;place-items:center;background:white;color:#94a2b8;font-size:10px;font-weight:800}
+.flow-step.active{color:#355dc6;font-weight:700}
+.flow-step.active .flow-index{border-color:#426ce6;background:#426ce6;color:white;box-shadow:0 3px 8px #416be32b}
+.flow-step.complete{color:#62738d}
+.flow-step.complete .flow-index{border-color:#d5e4fb;background:#eaf1ff;color:#5676bd}
+.flow-line{width:38px;height:1px;background:#dce4f1;margin:0 12px}
+.workspace{grid-template-columns:minmax(0,1fr) 366px;border-color:#e5eaf3;border-radius:18px;box-shadow:0 16px 50px rgba(33,58,108,.065),0 2px 8px rgba(33,58,108,.025)}
+.main-column{padding:28px 30px}
+.side-column{padding:28px;background:#fbfcff}
+.section-label{font-size:15px}
+.section-hint{font-size:12px;color:#8594ab}
+.dropzone{min-height:218px;border-color:#bed0ee;background:linear-gradient(155deg,#f9fbff,#f0f5ff);position:relative}
+.dropzone:hover,.dropzone.dragging{border-color:#557eeb;background:#edf3ff}
+.drop-icon{width:60px;height:60px;margin-bottom:13px}
+.drop-title{font-size:15px}
+.drop-sub{font-size:12px;color:#8291a9}
+.drop-choose{padding:9px 17px}
+.queue-head{margin-top:24px}
+.file-list{max-height:285px}
+.side-title{margin-bottom:21px}
+.format-field{border:0;padding:0;margin:0;min-width:0}
+.format-field legend{padding:0;margin:0 0 10px;color:#516078;font-size:12px;font-weight:700}
+.format-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.format-option{position:relative;display:block;cursor:pointer}
+.format-option input{position:absolute;width:1px;height:1px;opacity:0}
+.format-tile{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:57px;padding:9px 10px 9px 12px;border:1px solid #e3e9f2;border-radius:9px;background:#fff;transition:border-color .16s,background .16s,box-shadow .16s}
+.format-tile strong{display:block;color:#35445c;font-size:13px;letter-spacing:.015em}
+.format-tile small{display:block;color:#98a5b8;font-size:10px;margin-top:3px}
+.format-tile:after{content:"";flex:none;width:13px;height:13px;border-radius:50%;border:1px solid #ccd7e7;background:#fff}
+.format-option:hover .format-tile{border-color:#a9bff2}
+.format-option input:checked+.format-tile{border-color:#5c81ed;background:#f3f6ff;box-shadow:0 0 0 1px #5c81ed24}
+.format-option input:checked+.format-tile strong{color:#355fd0}
+.format-option input:checked+.format-tile:after{border:4px solid #5479eb}
+.format-option input:focus-visible+.format-tile{outline:3px solid #a1baff;outline-offset:2px}
+.format-option input:disabled+.format-tile{opacity:.6;cursor:not-allowed}
+.format-helper{font-size:11px;color:#96a4b7;line-height:1.6;margin:10px 0 0}
+.advanced{margin:18px 0 18px}
+.action-button{height:46px}
+.primary.after-results:not(:disabled){background:#f4f7ff;color:#5572b3;border-color:#dce6f8;box-shadow:none}
+.secondary.ready:not(:disabled){color:#fff;background:#3e6eeb;border-color:#3e6eeb;box-shadow:0 6px 14px rgba(57,104,230,.2)}
+.secondary.ready:hover:not(:disabled){background:#315fdc}
+.progress-top{margin-top:17px}
+.feedback{min-height:30px}
+.foot-notes{margin-top:15px;gap:12px}
+.note{border-color:#e8edf5;padding:15px 17px}
+.footer{margin-top:22px}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.side-column{padding:25px 28px}.format-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:520px){.shell{padding-top:32px}h1{font-size:26px}.main-column,.side-column{padding:21px 18px}.workflow{font-size:11px}.flow-line{width:18px;margin:0 7px}.format-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dropzone{min-height:190px}.note{padding:13px 14px}}
+
+/* Engineering-format choices and warnings. */
+.format-category{font-size:11px;font-weight:750;color:#63728b;margin:0 0 7px}
+.format-category span{font-weight:400;color:#9aa7b8;margin-left:5px}
+.mesh-category{margin-top:15px}
+.format-helper{min-height:36px}
+.file-status.review{color:#ba8524}
+.file-status.review .status-detail{color:#a9803b}
+.cad-notice{margin-top:11px;border-radius:8px;background:#fff9ea;color:#95712d;padding:10px 11px;font-size:11px;line-height:1.65}
+@media(max-width:520px){.format-category span{display:block;margin:3px 0 0}}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.7 20 7v9.8l-8 4.5-8-4.5V7l8-4.3Z" stroke="white" stroke-width="1.4" stroke-linejoin="round"/><path d="m4.4 7.2 7.6 4.3 7.6-4.3M12 11.5v9.3" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+      <div><div>三维格式工坊</div><div class="brand-sub">3D FORMAT WORKSHOP</div></div>
+    </div>
+    <div class="local-badge"><span class="local-dot"></span>本地运行 · 无需上传</div>
+  </div>
+</header>
+<main class="shell">
+  <section class="hero">
+    <div><p class="eyebrow">CAD / 3D CONVERTER</p><h1>三维模型，<span>轻松转换。</span></h1><p class="hero-copy">添加文件、选择格式，批量转换只需几步。</p></div>
+    <div class="hero-note"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 3 4.5 6v5.8c0 4.4 3.1 7.6 7.5 9.2 4.4-1.6 7.5-4.8 7.5-9.2V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg>文件只在你的设备上处理</div>
+  </section>
+  <nav class="workflow" aria-label="转换步骤">
+    <div class="flow-step active" data-step="1" aria-current="step"><span class="flow-index">1</span>添加文件</div><span class="flow-line" aria-hidden="true"></span>
+    <div class="flow-step" data-step="2"><span class="flow-index">2</span>选择格式并转换</div><span class="flow-line" aria-hidden="true"></span>
+    <div class="flow-step" data-step="3"><span class="flow-index">3</span>下载结果</div>
+  </nav>
+
+  <section class="workspace" aria-label="模型格式转换">
+    <div class="main-column">
+      <div class="section-head"><div class="section-label"><span class="number">01</span>添加模型</div><span class="section-hint">支持批量添加</span></div>
+      <input id="file-input" type="file" multiple accept=".step,.stp,.iges,.igs,.brep,.stl,.obj,.ply" hidden>
+      <button type="button" class="dropzone" id="drop-zone">
+        <span class="drop-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="m24 6 13 7v15L24 36 11 28V13L24 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m11 13 13 7 13-7M24 20v16" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="35" cy="34" r="8" fill="white" stroke="#6D91EE" stroke-width="1.5"/><path d="M35 30v8m-4-4h8" stroke="#6D91EE" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+        <span class="drop-title">拖入模型文件，或<em>点击选择</em></span>
+        <span class="drop-sub">STEP / IGES / BREP / STL / OBJ / PLY</span>
+        <span class="drop-choose">选择模型文件</span>
+      </button>
+      <div class="queue-head">
+        <div class="queue-title">文件列表 <span class="queue-count" id="queue-count">0 个文件</span></div>
+        <div class="queue-actions"><button class="link-button" id="add-files" type="button">继续添加</button><button class="link-button" id="clear-files" type="button">清空</button></div>
+      </div>
+      <div class="list-empty" id="list-empty"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M5 4h10l4 4v12H5z"/><path d="M14 4v5h5M8 13h8M8 16h6"/></svg>添加的模型会显示在这里</div>
+      <ul class="file-list" id="file-list" aria-label="待转换文件"></ul>
+    </div>
+    <aside class="side-column">
+      <div class="section-label side-title"><span class="number">02</span>选择导出格式</div>
+      <fieldset class="format-field">
+        <legend>选择输出格式</legend>
+        <select id="target-format" hidden tabindex="-1" aria-hidden="true"><option value="stl">STL</option><option value="obj">OBJ</option><option value="ply">PLY</option><option value="glb">GLB</option><option value="step">STEP</option><option value="iges">IGES</option><option value="brep">BREP</option></select>
+        <p class="format-category">CAD 几何 <span>适用于 STEP / IGES / BREP 输入</span></p>
+        <div class="format-grid">
+          <label class="format-option"><input type="radio" name="output-format" value="step"><span class="format-tile"><span><strong>STEP</strong><small>CAD 交换</small></span></span></label>
+          <label class="format-option"><input type="radio" name="output-format" value="iges"><span class="format-tile"><span><strong>IGES</strong><small>CAD 曲面</small></span></span></label>
+          <label class="format-option"><input type="radio" name="output-format" value="brep"><span class="format-tile"><span><strong>BREP</strong><small>OCCT 几何</small></span></span></label>
+        </div>
+        <p class="format-category mesh-category">三角网格 <span>适用于模型预览和打印</span></p>
+        <div class="format-grid">
+          <label class="format-option"><input type="radio" name="output-format" value="stl" checked><span class="format-tile"><span><strong>STL</strong><small>3D 打印</small></span></span></label>
+          <label class="format-option"><input type="radio" name="output-format" value="obj"><span class="format-tile"><span><strong>OBJ</strong><small>通用建模</small></span></span></label>
+          <label class="format-option"><input type="radio" name="output-format" value="ply"><span class="format-tile"><span><strong>PLY</strong><small>三维网格</small></span></span></label>
+          <label class="format-option"><input type="radio" name="output-format" value="glb"><span class="format-tile"><span><strong>GLB</strong><small>三维预览</small></span></span></label>
+        </div>
+        <p class="format-helper" id="format-helper">转换为三角网格，不保留可编辑 CAD 实体。</p>
+      </fieldset>
+      <details class="advanced">
+        <summary>单位设置</summary>
+        <div class="field">
+          <label for="input-unit">网格文件 / BREP 的原始单位</label>
+          <div class="select-wrap"><select id="input-unit"><option value="mm">毫米 mm（默认）</option><option value="cm">厘米 cm</option><option value="m">米 m</option><option value="inch">英寸 in</option></select></div>
+          <p class="field-help">STEP / IGES 自动读取单位。STL、OBJ、PLY 和 BREP 不提供可靠的单位信息，请按原始模型选择。STL / OBJ / PLY 输出数值按毫米，GLB 按米。</p>
+        </div>
+      </details>
+      <button class="action-button primary" type="button" id="start-button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 9 6-9 6V6Z" stroke-linejoin="round"/></svg><span id="start-label">开始转换</span></button>
+      <button class="action-button secondary" type="button" id="download-button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-4-4 4 4 4-4M5 17v3h14v-3"/></svg><span id="download-label">下载转换结果</span></button>
+      <div class="progress-top"><span>处理进度</span><span id="progress-text">准备就绪</span></div>
+      <progress id="progress" value="0" max="100" aria-label="处理进度"></progress>
+      <p class="feedback" id="feedback" role="status" aria-live="polite">选择文件后开始。</p>
+      <div class="cad-notice">CAD 输出不会保留装配层级、名称、颜色和建模历史；IGES 可能只保留曲面。请在目标软件核对。</div>
+      <div class="local-note"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v2"/></svg><span>所有计算均在浏览器中完成，模型不会上传到服务器。</span></div>
+    </aside>
+  </section>
+  <section class="foot-notes" aria-label="使用说明">
+    <div class="note"><span class="note-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h16v12H4zM8 8V5h8v3m-4 4v4m-2-2h4"/></svg></span><div><strong>使用很简单</strong><p>添加文件，选好格式后开始转换，完成后下载 ZIP 即可。</p></div></div>
+    <div class="note"><span class="note-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><path d="M12 11v5m0-8h.01" stroke-linecap="round"/></svg></span><div><strong>关于转换结果</strong><p>STEP / IGES / BREP 可以相互转换；IGES 可能转为曲面。三角网格不能恢复精确 CAD 实体，关键模型请核对尺寸与完整性。</p></div></div>
+  </section>
+  <footer class="footer">
+    <span>三维格式工坊 · 为简单工作而设计</span>
+    <details class="license"><summary>开源组件与许可</summary><div class="license-content">使用 <a href="https://github.com/LAU-MARS/opencascade-ts" target="_blank" rel="noopener noreferrer">occt.ts</a>、<a href="https://github.com/kovacsv/occt-import-js" target="_blank" rel="noopener noreferrer">occt-import-js / Open CASCADE</a>、<a href="https://github.com/mrdoob/three.js" target="_blank" rel="noopener noreferrer">Three.js</a>、<a href="https://github.com/Stuk/jszip" target="_blank" rel="noopener noreferrer">JSZip</a>。组件版本及许可随文件附带，源码可通过链接获取。<pre>__LICENSE_TEXT__</pre></div></details>
+  </footer>
+</main>
+<script id="converter-worker" type="text/plain">__WORKER_BUNDLE__</script>
+<script id="converter-wasm" type="application/octet-stream">__WASM_BASE64__</script>
+<script id="cad-worker" type="text/plain">__CAD_WORKER__</script>
+<script id="cad-wasm-gzip" type="application/octet-stream">__CAD_GZIP__</script>
+<script>__APP_BUNDLE__</script>
+</body>
+</html>
+

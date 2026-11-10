@@ -1,0 +1,21 @@
+.page { padding: 42rpx 28rpx 64rpx; }
+.hero { padding: 12rpx 8rpx 34rpx; }
+.eyebrow { color: #4775d8; font-size: 21rpx; letter-spacing: 3rpx; font-weight: 700; }
+.title { margin-top: 14rpx; font-size: 48rpx; font-weight: 750; letter-spacing: 1rpx; }
+.subtitle { margin-top: 12rpx; color: #61748f; font-size: 25rpx; }
+.notice { padding: 24rpx 26rpx; border-radius: 18rpx; background: #fff7e6; color: #785616; font-size: 24rpx; line-height: 1.7; }
+.notice-title { display: block; font-size: 26rpx; font-weight: 700; margin-bottom: 4rpx; }
+.card { margin-top: 22rpx; padding: 30rpx; border-radius: 22rpx; background: #fff; box-shadow: 0 10rpx 30rpx rgba(30,58,102,.05); }
+.section-title { display: flex; align-items: center; font-size: 30rpx; font-weight: 700; }
+.number { margin-right: 16rpx; color: #5a7ddb; font-size: 23rpx; letter-spacing: 1rpx; }
+.count { margin-left: auto; color: #8b99ab; font-size: 23rpx; font-weight: 400; }
+.choose { margin-top: 24rpx; padding: 20rpx 12rpx; border: 2rpx dashed #a9bdea; border-radius: 16rpx; background: #f5f8ff; color: #315dcc; font-size: 27rpx; line-height: 1.6; }
+.hint { margin-top: 18rpx; color: #8290a4; font-size: 23rpx; line-height: 1.65; }
+.file-list { margin-top: 20rpx; }
+.file-row { display: flex; align-items: center; gap: 16rpx; padding: 16rpx 0; border-top: 1rpx solid #edf1f6; }
+.file-info { flex: 1; min-width: 0; }.filename { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 25rpx; }.filesize { margin-top: 4rpx; color: #98a4b4; font-size: 21rpx; }
+.remove, .clear { color: #667d9c; font-size: 23rpx; }.clear { padding-top: 14rpx; text-align: right; }
+.format-grid { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 24rpx; }.format { box-sizing: border-box; width: calc(25% - 9rpx); padding: 22rpx 0; border: 2rpx solid #e6edf6; border-radius: 13rpx; color: #4a5f7c; font-size: 25rpx; font-weight: 600; text-align: center; }.format.selected { border-color: #527ee6; color: #315ed3; background: #eef4ff; }
+.unit-row { display: flex; justify-content: space-between; align-items: center; margin-top: 28rpx; color: #60738e; font-size: 25rpx; }.unit-value { color: #315dcc; }
+.primary, .secondary { margin-top: 22rpx; padding: 16rpx; border-radius: 14rpx; font-size: 28rpx; line-height: 1.6; }.primary { background: #315fd5; color: #fff; }.primary[disabled] { background: #aabbe0; color: #f5f7fb; }.secondary { background: #eaf1ff; color: #315dcc; }
+.status { margin-top: 18rpx; color: #6d7e94; font-size: 23rpx; line-height: 1.6; }.footer { padding: 30rpx 8rpx 0; color: #8c99aa; font-size: 22rpx; line-height: 1.7; }

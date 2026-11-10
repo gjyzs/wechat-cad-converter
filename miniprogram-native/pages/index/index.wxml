@@ -1,0 +1,39 @@
+<view class="page">
+  <view class="hero">
+    <view class="eyebrow">FREE &amp; OPEN SOURCE</view>
+    <view class="title">三维格式转换</view>
+    <view class="subtitle">免费使用 · 设备本地处理 · 无需授权码</view>
+  </view>
+
+  <view class="notice"><text class="notice-title">试验版：尚未通过微信真机验证</text><text>支持 STEP、IGES、BREP、STL、OBJ、PLY 输入；CAD 引擎首次使用需下载小程序分包。重要模型请在目标软件中核对。</text></view>
+
+  <view class="card">
+    <view class="section-title"><text class="number">01</text> 添加模型 <text class="count">{{files.length}} / 20</text></view>
+    <button class="choose" bindtap="chooseFiles" disabled="{{busy}}">＋ 从微信聊天选择文件</button>
+    <view class="hint">可先把模型发送到文件传输助手，再从聊天中选择。单文件不超过 20 MB，总计不超过 60 MB。</view>
+    <view class="file-list" wx:if="{{files.length}}">
+      <view class="file-row" wx:for="{{files}}" wx:key="id">
+        <view class="file-info"><view class="filename">{{item.name}}</view><view class="filesize">{{item.sizeText}}</view></view>
+        <view class="remove" data-index="{{index}}" bindtap="removeFile">移除</view>
+      </view>
+      <view class="clear" bindtap="clearFiles">清空列表</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title"><text class="number">02</text> 选择输出格式</view>
+    <view class="format-grid">
+      <view wx:for="{{formats}}" wx:key="key" class="format {{target === item.key ? 'selected' : ''}}" data-format="{{item.key}}" bindtap="chooseFormat">{{item.label}}</view>
+    </view>
+    <view class="unit-row"><text>输入文件单位</text><picker mode="selector" range="{{unitLabels}}" value="{{unitIndex}}" bindchange="chooseUnit" disabled="{{busy}}"><view class="unit-value">{{unitLabels[unitIndex]}} ▾</view></picker></view>
+    <view class="hint">STEP、IGES 按毫米读取；BREP 和网格请按原模型选择单位。GLB 按米导出，网格不能恢复成精确 CAD 实体。</view>
+  </view>
+
+  <view class="card actions">
+    <view class="section-title"><text class="number">03</text> 转换并获取结果</view>
+    <button class="primary" bindtap="startConversion" disabled="{{busy || !files.length}}">{{busy ? '正在转换…' : '开始本地转换'}}</button>
+    <button wx:if="{{resultPath}}" class="secondary" bindtap="shareResult" disabled="{{busy}}">转发 ZIP 结果</button>
+    <view class="status">{{status}}</view>
+  </view>
+  <view class="footer">转换在设备上进行，不上传至开发者服务器。选择或转发聊天文件时，微信会按其服务方式处理文件。</view>
+</view>

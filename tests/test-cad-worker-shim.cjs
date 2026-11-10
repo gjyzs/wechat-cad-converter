@@ -1,0 +1,10 @@
+const { parentPort } = require('node:worker_threads');
+globalThis.self = globalThis;
+globalThis.location = { href: 'blob:offline-cad-test' };
+globalThis.WorkerGlobalScope = class WorkerGlobalScope {};
+globalThis.fetch = () => { throw new Error('Unexpected network request'); };
+globalThis.XMLHttpRequest = class { constructor() { throw new Error('Unexpected XHR'); } };
+globalThis.process = undefined;
+self.postMessage = (message, transfer) => parentPort.postMessage(message, transfer);
+require('../source/cad-worker-v3-bundle.js');
+parentPort.on('message', (data) => self.onmessage({ data }));

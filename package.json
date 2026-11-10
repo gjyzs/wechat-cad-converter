@@ -1,0 +1,23 @@
+{
+  "name": "wechat-cad-free",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Free local CAD converter and WeChat mini-program feasibility package",
+  "scripts": {
+    "build": "node scripts/build.cjs && node scripts/build-native.cjs && node scripts/package-release.cjs",
+    "build:split-experiment": "node scripts/build-split-experiment.cjs",
+    "rebundle:web": "node scripts/rebundle-web.cjs",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "dependencies": {
+    "fflate": "0.8.2",
+    "jszip": "3.10.1",
+    "occt-import-js": "0.0.23",
+    "occt.ts": "2.0.0",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.11",
+    "jsdom": "26.1.0"
+  }
+}

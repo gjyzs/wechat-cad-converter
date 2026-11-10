@@ -1,0 +1,7 @@
+<web-view wx:if="{{webUrl}}" src="{{webUrl}}" binderror="onWebViewError"></web-view>
+<view wx:else class="setup">
+  <view class="eyebrow">三维格式转换 · 免费版</view>
+  <view class="title">还差一步，接入转换页面</view>
+  <view class="description">这个小程序仍在准备中。请先完成微信小程序账号、业务域名与网页部署，再用真机验证文件选择和结果保存。</view>
+  <view class="note">当前页面为开发状态，尚不能转换文件。</view>
+</view>
