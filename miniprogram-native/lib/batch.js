@@ -1,4 +1,5 @@
 const { convertMesh, convertTriangles, makeZip } = require('./mesh.js');
+const { loadCadPart } = require('./load-cad-parts.js');
 const meshInputs = new Set(['stl', 'obj', 'ply']);
 const cadInputs = new Set(['step', 'stp', 'iges', 'igs', 'brep']);
 const cadOutputs = new Set(['step', 'iges', 'brep']);
@@ -51,7 +52,7 @@ async function convertBatch({ files, target, unit = 'mm', readFile, writeFile, o
       actualTotalBytes += data.byteLength;
       if (actualTotalBytes > maxTotalBytes) throw new Error('文件总大小不能超过 60 MB。');
       const result = cadInputs.has(type)
-        ? await require('./cad.js').convertCad({ data, extension: type, target, unit, convertTriangles })
+        ? await require('./cad.js').convertCad({ data, extension: type, target, unit, convertTriangles, loadPart: loadCadPart })
         : await convertMesh({ data, extension: type, target, unit });
       entries.push({ name: outputName(name, target, used), data: result.result });
       if (result.cadSummary) reports.push({ name, summary: result.cadSummary });

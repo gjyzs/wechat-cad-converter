@@ -1,4 +1,5 @@
 import { decodeUtf8, encodeUtf8 } from './native-utf8.mjs';
+import { byteView, isArrayBuffer } from './native-bytes.mjs';
 
 // The converter only parses local bytes; no network loader uses this signal.
 if (typeof globalThis.AbortController === 'undefined') {
@@ -15,10 +16,7 @@ if (typeof globalThis.TextEncoder === 'undefined') {
 if (typeof globalThis.TextDecoder === 'undefined') {
   globalThis.TextDecoder = class TextDecoder {
     decode(value = new Uint8Array()) {
-      const bytes = value instanceof ArrayBuffer
-        ? new Uint8Array(value)
-        : new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-      return decodeUtf8(bytes);
+      return decodeUtf8(byteView(value));
     }
   };
 }
@@ -28,8 +26,7 @@ if (typeof globalThis.Blob === 'undefined') {
     constructor(parts = [], options = {}) {
       const pieces = parts.map((part) => {
         if (typeof part === 'string') return new TextEncoder().encode(part);
-        if (part instanceof ArrayBuffer) return new Uint8Array(part);
-        if (ArrayBuffer.isView(part)) return new Uint8Array(part.buffer, part.byteOffset, part.byteLength);
+        if (isArrayBuffer(part) || ArrayBuffer.isView(part)) return byteView(part);
         if (part && part._bytes instanceof Uint8Array) return part._bytes;
         throw new Error('无法处理 GLB 数据。');
       });

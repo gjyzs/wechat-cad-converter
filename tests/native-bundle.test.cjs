@@ -37,6 +37,10 @@ test('native bundle converts locally without browser APIs or network', async () 
   const result = await context.module.exports.convertMesh({ data, extension: 'stl', target: 'glb', unit: 'mm' });
   assert.equal(result.triangles, 1);
   assert.equal(Buffer.from(result.result).toString('ascii', 0, 4), 'glTF');
+  const hostBytes = Buffer.from(tinyStl);
+  const foreignBuffer = hostBytes.buffer.slice(hostBytes.byteOffset, hostBytes.byteOffset + hostBytes.byteLength);
+  const foreignResult = await context.module.exports.convertMesh({ data: foreignBuffer, extension: 'stl', target: 'obj', unit: 'mm' });
+  assert.match(Buffer.from(foreignResult.result).toString('utf8'), /^v\s/m);
   const entries = vm.runInContext(`[{ name: '模型😀.txt', data: '几何结果' }]`, context);
   const archive = context.module.exports.makeZip(entries);
   const zip = await JSZip.loadAsync(Buffer.from(archive));

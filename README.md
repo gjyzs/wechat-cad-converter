@@ -4,7 +4,7 @@
 
 ## 目前能做什么
 
-- `miniprogram-native/`：原生小程序试验版，已接入 STEP、IGES、BREP、STL、OBJ、PLY 输入，以及 STEP、IGES、BREP、STL、OBJ、PLY、GLB 输出。CAD 引擎使用分包方式加载；目前只通过电脑模拟测试，**能否在微信真实设备运行尚未确认**。
+- `miniprogram-native/`：原生小程序试验版，已接入 STEP、IGES、BREP、STL、OBJ、PLY 输入，以及 STEP、IGES、BREP、STL、OBJ、PLY、GLB 输出。CAD 引擎使用分包方式加载；已在微信开发者工具模拟器中用立方体样例完成 STEP → STL，**能否在微信真实设备运行尚未确认**。
 - `dist/web/index.html`：免授权码的完整浏览器版，支持 STEP、IGES、BREP、STL、OBJ、PLY 输入；支持 STEP、IGES、BREP、STL、OBJ、PLY、GLB 输出。只有 CAD 输入才能导出 CAD，网格不能还原成精确 CAD 实体。
 - `miniprogram/`：仅供研究的网页嵌入壳，未配置网址。个人主体通常不支持网页嵌入，不是本项目默认发布方案。
 
@@ -27,7 +27,7 @@ npm test
 
 源码仓库不提交生成的 WASM 分包、打包后的 JavaScript 或浏览器 HTML；上述步骤会生成这些文件。修改浏览器转换源代码后需要重新运行 `npm run rebundle:web`。
 
-在微信开发者工具中打开本目录，`project.config.json` 已指向 `miniprogram-native/`；其中 `touristappid` 仅为开发占位。**本项目尚未在微信开发者工具或手机真机上验证**，CAD 分包加载、模块间共享内存和全局量、文件选取、ZIP 转发、内存占用和不同设备兼容性均需实测；尤其不能假设 iOS 与 Android 表现一致。CAD 引擎在首次使用时需要下载小程序分包，模型转换仍在设备上进行。
+在微信开发者工具中打开本目录，`project.config.json` 已指向 `miniprogram-native/`；其中 `touristappid` 仅为开发占位。微信开发者工具模拟器已完成立方体 STEP → STL 的一次测试；**尚未完成手机真机验证**，CAD 分包加载、模块间共享内存和全局量、文件选取、ZIP 转发、内存占用和不同设备兼容性均需在真实设备上实测；尤其不能假设 iOS 与 Android 表现一致。CAD 引擎在首次使用时需要下载小程序分包，模型转换仍在设备上进行。
 
 ## 公开发布还缺什么
 

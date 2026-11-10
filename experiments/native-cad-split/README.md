@@ -1,6 +1,6 @@
 # CAD 引擎拆分试验
 
-本目录用于研究如何在设备本地运行 CAD 引擎。CAD 分包与加载器已接入原生小程序试验版，但还没有经过微信环境验证，不能视为可发布功能。
+本目录用于研究如何在设备本地运行 CAD 引擎。CAD 分包与加载器已接入原生小程序试验版，并在微信开发者工具模拟器中完成立方体 STEP → STL 的一次测试；尚未进行手机真机验证，不能视为已可发布的功能。
 
 两套上游 WASM 可经 Binaryen 132 的 `wasm-split` 拆分，并以 Brotli 压缩到 `packages/`；每个文件小于 2 MB。生成文件不提交源码仓库。测试使用 Node 模拟 `WXWebAssembly.instantiate` 和分包加载，检查 STEP/IGES 读取、STEP→IGES、IGES→STEP 及几何读回。**这不能证明微信的分包访问、异常处理、可变全局量、iOS/Android 兼容性或内存表现。**
 

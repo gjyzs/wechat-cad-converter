@@ -7,7 +7,8 @@ const root = path.resolve(__dirname, '..');
 test('development project points to the native app and contains no configured network service', () => {
   const config = JSON.parse(fs.readFileSync(path.join(root, 'project.config.json'), 'utf8'));
   assert.equal(config.miniprogramRoot, 'miniprogram-native/');
-  assert.equal(config.appid, 'touristappid');
+  // The developer tool may replace the placeholder with the developer's test AppID.
+  assert.match(config.appid, /^(?:touristappid|wx[0-9a-f]{16})$/i);
   const miniRoot = path.join(root, config.miniprogramRoot);
   const app = JSON.parse(fs.readFileSync(path.join(miniRoot, 'app.json'), 'utf8'));
   for (const page of app.pages) for (const extension of ['js', 'json', 'wxml', 'wxss']) {

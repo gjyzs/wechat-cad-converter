@@ -8,17 +8,11 @@ import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
 import { PLYExporter } from 'three/examples/jsm/exporters/PLYExporter.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { zipSync, strToU8 } from 'fflate';
+import { arrayBuffer } from './native-bytes.mjs';
 const formats = new Set(['stl', 'obj', 'ply']);
 const outputs = new Set(['stl', 'obj', 'ply', 'glb']);
 const units = { mm: 1, cm: 10, m: 1000, inch: 25.4 };
 const material = () => new THREE.MeshStandardMaterial({ color: 0xbac5d7, roughness: 0.8, metalness: 0 });
-
-function asArrayBuffer(value) {
-  if (value instanceof ArrayBuffer) return value;
-  if (ArrayBuffer.isView(value)) return value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength);
-  if (typeof value === 'string') return new TextEncoder().encode(value).buffer;
-  throw new Error('文件数据无效。');
-}
 
 function prepareGeometry(root) {
   let triangles = 0;
@@ -64,14 +58,14 @@ async function exportRoot(root, output, unit) {
   if (output === 'glb') {
     result = await new Promise((resolve, reject) => new GLTFExporter().parse(root, resolve, reject, { binary: true, onlyVisible: true }));
   }
-  return { result: asArrayBuffer(result), triangles };
+  return { result: arrayBuffer(result), triangles };
 }
 
 export async function convertMesh({ data, extension, target, unit = 'mm' }) {
   const input = String(extension || '').toLowerCase();
   const output = String(target || '').toLowerCase();
   if (!formats.has(input)) throw new Error('原生小程序原型暂不支持该格式，请选择 STL、OBJ 或 PLY 网格。');
-  const bytes = asArrayBuffer(data);
+  const bytes = arrayBuffer(data);
   if (!bytes.byteLength) throw new Error('模型文件为空。');
   const root = new THREE.Group();
   try {
@@ -97,7 +91,7 @@ export async function convertTriangles({ positions, indices, target, unit = 'mm'
 export function makeZip(entries) {
   const files = Object.create(null);
   for (const entry of entries) {
-    files[entry.name] = typeof entry.data === 'string' ? strToU8(entry.data) : new Uint8Array(asArrayBuffer(entry.data));
+    files[entry.name] = typeof entry.data === 'string' ? strToU8(entry.data) : new Uint8Array(arrayBuffer(entry.data));
   }
   const archive = zipSync(files, { level: 6 });
   return archive.buffer.slice(archive.byteOffset, archive.byteOffset + archive.byteLength);

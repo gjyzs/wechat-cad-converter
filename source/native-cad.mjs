@@ -2,6 +2,7 @@ import './native-compat.mjs';
 import { OccSession } from 'occt.ts';
 import makeModule from '../node_modules/occt.ts/dist/wasm/occtjs.js';
 import split from '../experiments/native-cad-split/split-loader.cjs';
+import { byteView } from './native-bytes.mjs';
 
 // The generated OCCT glue refers to RuntimeError on failure. The actual WASM
 // instantiation below is delegated to WXWebAssembly, not this compatibility shim.
@@ -14,11 +15,10 @@ const mmPerUnit = { mm: 1, cm: 10, m: 1000, inch: 25.4 };
 const category = (type) => type === 'stp' ? 'step' : type === 'igs' ? 'iges' : type;
 let enginePromise;
 
-function getEngine() {
+function getEngine(loadPart) {
   if (!enginePromise) {
-    const runtime = typeof wx === 'undefined' ? null : wx;
     const wasm = typeof WXWebAssembly === 'undefined' ? null : WXWebAssembly;
-    enginePromise = split.loadSplitKernel({ factory: makeModule, runtime, wasm, parts: split.descriptors.cad })
+    enginePromise = split.loadSplitKernel({ factory: makeModule, loadPart, wasm, parts: split.descriptors.cad })
       .then((module) => { module.setVerbose(false); return module; })
       .catch((error) => { enginePromise = null; throw error; });
   }
@@ -65,16 +65,16 @@ function compare(before, after, target) {
   return warnings;
 }
 
-export async function convertCad({ data, extension, target, unit = 'mm', convertTriangles }) {
+export async function convertCad({ data, extension, target, unit = 'mm', convertTriangles, loadPart }) {
   const input = String(extension || '').toLowerCase();
   const output = String(target || '').toLowerCase();
   if (!cadTypes.has(input)) throw new Error('CAD 输出只接受 STEP、IGES 或 BREP 输入。');
   if (!cadOutputs.has(output) && !meshOutputs.has(output)) throw new Error('不支持该输出格式。');
   if (!(unit in mmPerUnit)) throw new Error('请选择有效的输入单位。');
   if (cadOutputs.has(output) && category(input) === output) throw new Error('输入与输出格式相同，请直接使用原文件。');
-  const bytes = data instanceof ArrayBuffer ? new Uint8Array(data) : new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+  const bytes = byteView(data);
   if (!bytes.length) throw new Error('模型文件为空。');
-  const occ = new OccSession(await getEngine());
+  const occ = new OccSession(await getEngine(loadPart));
   try {
     const shape = readShape(occ, input, bytes, unit);
     const before = stats(shape);

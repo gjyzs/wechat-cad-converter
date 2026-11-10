@@ -6,7 +6,7 @@ const root = path.resolve(__dirname, '..');
 const output = path.join(root, 'dist', 'release', '三维转换-免费开源试验版.zip');
 const include = [
   'README.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', '.gitignore',
-  'package.json', 'package-lock.json', 'project.config.json',
+  'package.json', 'package-lock.json',
   'source', 'scripts', 'tests', 'licenses', 'miniprogram-native', 'miniprogram', 'experiments', 'dist/web/index.html'
 ];
 const forbidden = /(^|\/)(node_modules|卖家专用|私钥|授权码库存)(\/|$)/i;
@@ -27,6 +27,16 @@ function add(relative) {
 
 (async () => {
   for (const item of include) add(item);
+  // Developer Tools rewrites project.config.json locally; never publish that
+  // file or the companion project.private.config.json in a release archive.
+  zip.file('project.config.json', JSON.stringify({
+    description: 'Free local 3D converter experimental prototype',
+    appid: 'touristappid',
+    projectname: 'cad-converter-free',
+    compileType: 'miniprogram',
+    miniprogramRoot: 'miniprogram-native/',
+    setting: { es6: true, minified: true, urlCheck: true }
+  }, null, 2) + '\n');
   const data = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE', compressionOptions: { level: 6 } });
   fs.mkdirSync(path.dirname(output), { recursive: true });
   fs.writeFileSync(output, data);

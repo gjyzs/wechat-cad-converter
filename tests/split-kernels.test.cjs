@@ -13,7 +13,7 @@ function fakeRuntime() {
   const loaded = [];
   return {
     loaded,
-    wx: { loadSubpackage: ({ name, success }) => { loaded.push(name); success({}); } },
+    loadPart: async (name) => { loaded.push(name); },
     wasm: { instantiate: async (filePath, imports) => {
       const bytes = zlib.brotliDecompressSync(fs.readFileSync(path.join(experiment, filePath.replace(/^\//, ''))));
       return WebAssembly.instantiate(bytes, imports);
@@ -26,7 +26,7 @@ test('split kernels locally read and exchange real CAD geometry', { timeout: 300
   const { loadSplitKernel, descriptors } = require(loaderPath);
   const runtime = fakeRuntime();
   const meshFactory = require('occt-import-js');
-  const mesh = await loadSplitKernel({ factory: meshFactory, runtime: runtime.wx, wasm: runtime.wasm, parts: descriptors.mesh });
+  const mesh = await loadSplitKernel({ factory: meshFactory, loadPart: runtime.loadPart, wasm: runtime.wasm, parts: descriptors.mesh });
   const fixture = path.join(root, 'node_modules/occt-import-js/test/testfiles/cube-10x10mm');
   const step = new Uint8Array(fs.readFileSync(path.join(fixture, 'Cube 10x10.stp')));
   const iges = new Uint8Array(fs.readFileSync(path.join(fixture, 'Cube 10x10.igs')));
@@ -36,7 +36,7 @@ test('split kernels locally read and exchange real CAD geometry', { timeout: 300
   }
   const cadFactory = (await import(pathToFileURL(path.join(root, 'node_modules/occt.ts/dist/wasm/occtjs.js')).href)).default;
   const { OccSession } = await import('occt.ts');
-  const module = await loadSplitKernel({ factory: cadFactory, runtime: runtime.wx, wasm: runtime.wasm, parts: descriptors.cad });
+  const module = await loadSplitKernel({ factory: cadFactory, loadPart: runtime.loadPart, wasm: runtime.wasm, parts: descriptors.cad });
   module.setVerbose(false);
   const occ = new OccSession(module);
   try {
@@ -70,6 +70,22 @@ test('subpackage failure rejects promptly instead of leaving initialization stuc
     options.instantiateWasm({}, () => {});
     return new Promise(() => {});
   };
-  const runtime = { loadSubpackage: ({ fail }) => fail({ errMsg: 'load failed' }) };
-  await assert.rejects(() => loadSplitKernel({ factory, runtime, wasm: {}, parts: descriptors.mesh }), /加载|失败/);
+  const loadPart = async () => { throw { errMsg: 'load failed' }; };
+  const wasm = { instantiate: async () => { throw new Error('should not instantiate'); } };
+  await assert.rejects(() => loadSplitKernel({ factory, loadPart, wasm, parts: descriptors.mesh }), /load failed/);
+});
+
+test('a missing WebAssembly interface gives a useful error', async () => {
+  const { loadSplitKernel, descriptors } = require(loaderPath);
+  await assert.rejects(() => loadSplitKernel({ factory: () => {}, loadPart: async () => {}, wasm: null, parts: descriptors.cad }), /WXWebAssembly/);
+});
+
+test('WASM initialization failures identify the failing module', async () => {
+  const { loadSplitKernel, descriptors } = require(loaderPath);
+  const factory = (options) => {
+    options.instantiateWasm({}, () => {});
+    return new Promise(() => {});
+  };
+  const wasm = { instantiate: async () => { throw new Error('simulated wasm failure'); } };
+  await assert.rejects(() => loadSplitKernel({ factory, loadPart: async () => {}, wasm, parts: descriptors.cad }), /cad-core.*simulated wasm failure/);
 });
